@@ -1,7 +1,6 @@
 #include<iostream>
 using namespace std;
 typedef int Rank; 
-using Rank = unsigned int; //秩
 #define DEFAULT_CAPACITY  3 //默认的初始容量（实际应用中可设置为更大）
 
 template <typename T> class Vector { //向量模板类
@@ -93,15 +92,13 @@ template <typename T> const T& Vector<T>::operator[] (Rank r) const //仅限于�
 }//常规向量直接引用 
 template <typename T> void permute(Vector<T>& V) {
     for (int i = V.size(); i > 0; i--)
-        swap(V[i - 1], V[rand() % i]);
+        swap(V[i - 1], V[rand(V) % i]);
 }//置乱算法 
 template <typename T> void Vector<T>::unsort(Rank lo, Rank hi) {
     T* V = _elem + lo;
     for (Rank i = hi - lo; 1 < i; --i)
-        swap(V[i - 1], V[rand() % i]);
+        swap(V[i - 1], V[rand(V) % i]);
 }//区间置乱接口 
-template <typename T> static bool lt(T* a, T* b) { return lt(*a, *b); }
-template <typename T> static bool lt(T& a, T& b) { return a < b; }
 template <typename T> static bool lt(T* a, T* b) { return lt(*a, *b); }
 template <typename T> static bool lt(T& a, T& b) { return a < b; }
 //重载比较器以比较对象指针 
