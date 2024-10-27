@@ -1,55 +1,58 @@
 #include <iostream>
 #include <vector>
 #include <stack>
+#include <algorithm>
 #include <cstdlib>
 #include <ctime>
 
 using namespace std;
 
-// 计算最大矩形面积的函数
 int largestRectangleArea(vector<int>& heights) {
-    stack<int> s; // 单调栈
     int maxArea = 0;
-    heights.push_back(0); // 添加一个高度为0的柱子，方便计算
-    for (int i = 0; i < heights.size(); i++) {
-        while (!s.empty() && heights[s.top()] > heights[i]) {
+    stack<int> s;
+    heights.push_back(0);  // Add a sentinel value to handle the remaining elements in the stack
+
+    for (int i = 0; i < heights.size(); ++i) {
+        while (!s.empty() && heights[i] < heights[s.top()]) {
             int h = heights[s.top()];
             s.pop();
-            int w = s.empty() ? i : i - s.top() - 1;
-            maxArea = max(maxArea, h * w);
+            int width = s.empty() ? i : i - s.top() - 1;
+            maxArea = max(maxArea, h * width);
         }
         s.push(i);
     }
+    
+    heights.pop_back();  // Remove the sentinel value
     return maxArea;
 }
 
-// 随机生成测试数据
-vector<int> generateRandomHeights(int size) {
-    vector<int> heights(size);
-    for (int i = 0; i < size; i++) {
-        heights[i] = rand() % 10001; // 高度范围为0到10000
+vector<int> generateRandomHeights(int n, int maxHeight) {
+    vector<int> heights;
+    for (int i = 0; i < n; ++i) {
+        heights.push_back(rand() % (maxHeight + 1));
     }
     return heights;
 }
 
 int main() {
-    srand(static_cast<unsigned int>(time(0))); // 设置随机种子
+    srand(time(0));  // Initialize random seed
+    int numTests = 10;
+    int maxBars = 10;      // 最大柱子数量
+    int maxHeight = 10;    // 最大高度
 
-    for (int i = 0; i < 10; i++) {
-        int size = rand() % 100000 + 1; // 随机长度，范围为1到100000
-        vector<int> heights = generateRandomHeights(size);
-        
-        // 打印随机生成的柱子高度
-        cout << "Test case " << (i + 1) << ": ";
-        for (int height : heights) {
-            cout << height << " ";
+    for (int i = 1; i <= numTests; ++i) {
+        int n = rand() % maxBars + 1;  // 随机柱子数量
+        vector<int> heights = generateRandomHeights(n, maxHeight);
+
+        cout << "heights = [";
+        for (int j = 0; j < heights.size(); ++j) {
+            cout << heights[j] << (j < heights.size() - 1 ? ", " : "");
         }
-        cout << endl;
+        cout << "]" << endl;
 
         int maxArea = largestRectangleArea(heights);
-        cout << "Maximum rectangle area: " << maxArea << endl << endl;
+        cout << "最大矩形面积为: " << maxArea << endl << endl;
     }
 
     return 0;
 }
-
